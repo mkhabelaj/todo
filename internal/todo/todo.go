@@ -235,6 +235,11 @@ func formatCompletionStatus(todo TodoItem) (string, string) {
 	return completed, completedAt
 }
 
+// get list
+func (t *Todo) GetList() *TodoList {
+	return t.list
+}
+
 func sortAndRemoveDuplicates(ids []int32) []int32 {
 	ids = util.RemoveDuplicatesInt(ids)
 	sort.Slice(ids, func(i, j int) bool {
