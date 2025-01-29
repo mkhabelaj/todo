@@ -1,6 +1,7 @@
 package todo
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -34,16 +35,38 @@ func (t *Todo) Init() {
 	}
 }
 
-func (t *Todo) Load() {
-	items := t.Connecter.Read()
+func (t *Todo) Load() error {
+	items, err := t.Connecter.Read()
+	if err != nil {
+		return errors.New("Oops, something went wrong fetching your todo's from the source")
+	}
 	t.list = &items
+	return nil
 }
 
-func (t *Todo) Add(info string) {
+func (t *Todo) AddMany(infos []string) error {
+	for _, info := range infos {
+		if err := t.Add(info, false); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (t *Todo) Add(info string, save bool) error {
 	t.Init()
 	newTodo := TodoItem{info, false, time.Now(), time.Time{}}
 	*t.list = append(*t.list, newTodo)
-	t.Save()
+
+	if !save {
+		return nil
+	}
+
+	if err := t.Save(); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (t *Todo) validateAndDecrementndex(index *int32) {
@@ -56,7 +79,7 @@ func (t *Todo) validateAndDecrementndex(index *int32) {
 	*index--
 }
 
-func (t *Todo) Delete(index int32, save bool) {
+func (t *Todo) Delete(index int32, save bool) error {
 	todoList := *t.list
 
 	t.validateAndDecrementndex(&index)
@@ -64,11 +87,15 @@ func (t *Todo) Delete(index int32, save bool) {
 	*t.list = append(todoList[:index], todoList[index+1:]...)
 
 	if save {
-		t.Save()
+		if err := t.Save(); err != nil {
+			return err
+		}
 	}
+
+	return nil
 }
 
-func (t *Todo) DeleteMany(indexes []int32) {
+func (t *Todo) DeleteMany(indexes []int32) error {
 	indexes = sortAndRemoveDuplicates(indexes)
 	isFirst := true
 	for _, index := range indexes {
@@ -84,29 +111,43 @@ func (t *Todo) DeleteMany(indexes []int32) {
 		t.Delete(index, false)
 	}
 
-	t.Save()
+	if err := t.Save(); err != nil {
+		return err
+	}
+	return nil
 }
 
-func (t *Todo) CompleteMany(indexes []int32) {
+func (t *Todo) CompleteMany(indexes []int32) error {
 	indexes = sortAndRemoveDuplicates(indexes)
 	for _, index := range indexes {
 		t.Complete(index, false)
 	}
 
-	t.Save()
+	if err := t.Save(); err != nil {
+		return err
+	}
+	return nil
 }
 
-func (t *Todo) Complete(index int32, save bool) {
+func (t *Todo) Complete(index int32, save bool) error {
 	t.validateAndDecrementndex(&index)
 
 	(*t.list)[index].Completed = true
 	(*t.list)[index].CompletedAT = time.Now()
 
-	t.Save()
+	if err := t.Save(); err != nil {
+		return err
+	}
+	return nil
 }
 
-func (t *Todo) Save() {
-	t.Connecter.Write(t.list)
+func (t *Todo) Save() error {
+	err := t.Connecter.Write(t.list)
+	if err != nil {
+		newErr := errors.New("Oops, something went wrong saving your todo's to the source")
+		return newErr
+	}
+	return nil
 }
 
 func (t *Todo) color(item string, color string) string {

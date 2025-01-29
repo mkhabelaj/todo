@@ -1,6 +1,6 @@
 package todo
 
 type Connector interface {
-	Read() TodoList
-	Write(list *TodoList)
+	Read() (TodoList, error)
+	Write(list *TodoList) error
 }

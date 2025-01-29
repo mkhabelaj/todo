@@ -25,7 +25,11 @@ check 1 2 3
 
 This will mark tasks with IDs 1, 2, and 3 as complete. You can also pipe task IDs from another command.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		TodoObj.Load()
+		err := TodoObj.Load()
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
 		pipeList := *util.ReadStdin()
 		mergeList := append(pipeList, args...)
 
@@ -34,7 +38,11 @@ This will mark tasks with IDs 1, 2, and 3 as complete. You can also pipe task ID
 			fmt.Printf("Invalid input")
 			return
 		}
-		TodoObj.CompleteMany(intList)
+		err = TodoObj.CompleteMany(intList)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
 	},
 }
 

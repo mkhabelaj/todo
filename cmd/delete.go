@@ -23,19 +23,26 @@ var deleteCmd = &cobra.Command{
 
   This will delete the todo items with IDs 1, 2, and 3.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		TodoObj.Load()
-
+		err := TodoObj.Load()
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
 		pipeList := *util.ReadStdin()
 		merge := append(args, pipeList...)
 
 		ids := make([]int32, len(merge))
-		ids, err := util.StrToint[int32](merge)
+		ids, err = util.StrToint[int32](merge)
 		if err != nil {
 			fmt.Println("Invalid IDs, ensure they are numbers")
 			return
 		}
 
-		TodoObj.DeleteMany(ids)
+		err = TodoObj.DeleteMany(ids)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
 	},
 }
 
