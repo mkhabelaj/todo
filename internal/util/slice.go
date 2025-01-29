@@ -1,7 +1,6 @@
 package util
 
 import (
-	"log"
 	"strconv"
 )
 
@@ -18,16 +17,16 @@ func RemoveDuplicatesInt[T int | int8 | int16 | int32 | int64](slice []T) []T {
 	return result
 }
 
-func StrToint[U int | int8 | int16 | int32 | int64](slice []string) []U {
+func StrToint[U int | int8 | int16 | int32 | int64](slice []string) ([]U, error) {
 	result := make([]U, len(slice))
 	for i, v := range slice {
 
 		num, err := strconv.Atoi(v)
 		if err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
 		n := U(num)
 		result[i] = n
 	}
-	return result
+	return result, nil
 }

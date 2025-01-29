@@ -4,6 +4,8 @@ Copyright © 2025 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 
 	"github.com/mkhabelaj/todo/internal/util"
@@ -26,7 +28,12 @@ This will mark tasks with IDs 1, 2, and 3 as complete. You can also pipe task ID
 		TodoObj.Load()
 		pipeList := *util.ReadStdin()
 		mergeList := append(pipeList, args...)
-		intList := util.StrToint[int32](mergeList)
+
+		intList, err := util.StrToint[int32](mergeList)
+		if err != nil {
+			fmt.Printf("Invalid input")
+			return
+		}
 		TodoObj.CompleteMany(intList)
 	},
 }

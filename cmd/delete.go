@@ -4,6 +4,8 @@ Copyright © 2025 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 
 	"github.com/mkhabelaj/todo/internal/util"
@@ -27,7 +29,11 @@ var deleteCmd = &cobra.Command{
 		merge := append(args, pipeList...)
 
 		ids := make([]int32, len(merge))
-		ids = util.StrToint[int32](merge)
+		ids, err := util.StrToint[int32](merge)
+		if err != nil {
+			fmt.Println("Invalid IDs, ensure they are numbers")
+			return
+		}
 
 		TodoObj.DeleteMany(ids)
 	},
