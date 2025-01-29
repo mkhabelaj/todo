@@ -1,0 +1,38 @@
+/*
+Copyright © 2025 NAME HERE <EMAIL ADDRESS>
+*/
+package cmd
+
+import (
+	"github.com/spf13/cobra"
+
+	"github.com/mkhabelaj/todo/internal/util"
+)
+
+// deleteCmd represents the delete command
+var deleteCmd = &cobra.Command{
+	Use:   "delete",
+	Short: "Delete a task",
+	Long: `Delete a task by specifying its ID. You can provide multiple IDs to delete multiple items at once. 
+  The command ensures that duplicate IDs are removed before processing. 
+  Example usage:
+
+  delete 1 2 3
+
+  This will delete the todo items with IDs 1, 2, and 3.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		TodoObj.Load()
+
+		pipeList := *util.ReadStdin()
+		merge := append(args, pipeList...)
+
+		ids := make([]int32, len(merge))
+		ids = util.StrToint[int32](merge)
+
+		TodoObj.DeleteMany(ids)
+	},
+}
+
+func init() {
+	rootCmd.AddCommand(deleteCmd)
+}
