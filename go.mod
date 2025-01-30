@@ -26,3 +26,7 @@ replace github.com/mkhabelaj/todo/internal/util => ../todo/internal/util
 replace github.com/mkhabelaj/todo/internal/api => ../todo/internal/api
 
 replace github.com/mkhabelaj/todo/internal/api/apple => ../todo/internal/api/apple
+
+replace github.com/mkhabelaj/todo/cmd/reminder => ../todo/cmd/reminder
+
+replace github.com/mkhabelaj/todo/internal/connectors => ../todo/internal/connectors

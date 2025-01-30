@@ -290,6 +290,32 @@ func (t *Todo) AddDueAt(index int32, dueAt time.Time, save bool) error {
 	return nil
 }
 
+func (t *Todo) UpdateMeta(index int32, key string, value string, save bool) error {
+	t.validateAndDecrementndex(&index)
+	(*t.list)[index].Meta[key] = value
+
+	if !save {
+		return nil
+	}
+
+	if err := t.Save(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (t *Todo) GetTask(index int32) TodoItem {
+	t.validateAndDecrementndex(&index)
+	return (*t.list)[index]
+}
+
+func (t *Todo) HasMeta(index int32, key string) bool {
+	t.validateAndDecrementndex(&index)
+	_, ok := (*t.list)[index].Meta[key]
+	return ok
+}
+
 func (t *Todo) GetList() *TodoList {
 	return t.list
 }

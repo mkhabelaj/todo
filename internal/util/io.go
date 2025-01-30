@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"strings"
 )
 
 func ReadStdin() *[]string {
@@ -31,7 +32,7 @@ func IsAppleComputer() bool {
 		return false
 	}
 
-	if string(out) == "Darwin" {
+	if strings.Contains(string(out), "Darwin") {
 		return true
 	}
 	return false

@@ -8,6 +8,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/mkhabelaj/todo/internal/connectors"
 	"github.com/mkhabelaj/todo/internal/util"
 )
 
@@ -24,6 +25,7 @@ To add tasks via arguments:
 To add tasks via standard input:
   echo "Go for a walk" | todo add`,
 	Run: func(cmd *cobra.Command, args []string) {
+		TodoObj := connectors.GetConnectedTodo()
 		err := TodoObj.Load()
 		if err != nil {
 			fmt.Println(err)

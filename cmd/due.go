@@ -9,6 +9,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/mkhabelaj/todo/internal/connectors"
 	"github.com/mkhabelaj/todo/internal/util"
 )
 
@@ -40,6 +41,7 @@ to quickly create a Cobra application.`,
 			return
 		}
 
+		TodoObj := connectors.GetConnectedTodo()
 		err = TodoObj.Load()
 		if err != nil {
 			fmt.Println(err)

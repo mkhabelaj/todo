@@ -8,6 +8,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/mkhabelaj/todo/internal/connectors"
 	"github.com/mkhabelaj/todo/internal/util"
 )
 
@@ -23,6 +24,7 @@ var deleteCmd = &cobra.Command{
 
   This will delete the todo items with IDs 1, 2, and 3.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		TodoObj := connectors.GetConnectedTodo()
 		err := TodoObj.Load()
 		if err != nil {
 			fmt.Println(err)

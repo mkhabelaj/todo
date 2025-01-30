@@ -8,6 +8,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/mkhabelaj/todo/internal/connectors"
 	"github.com/mkhabelaj/todo/internal/util"
 )
 
@@ -25,6 +26,7 @@ check 1 2 3
 
 This will mark tasks with IDs 1, 2, and 3 as complete. You can also pipe task IDs from another command.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		TodoObj := connectors.GetConnectedTodo()
 		err := TodoObj.Load()
 		if err != nil {
 			fmt.Println(err)
