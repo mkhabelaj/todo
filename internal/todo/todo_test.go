@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"testing"
+	"time"
 
 	connector "github.com/mkhabelaj/todo/internal/connectors/json"
 	"github.com/mkhabelaj/todo/internal/todo"
@@ -162,4 +163,82 @@ func TestDeleteMany(t *testing.T) {
 		t.Error(err)
 	}
 	assertTodoListLength(*todoObj.GetList(), 4, t)
+}
+
+func TestDueAt(t *testing.T) {
+	path := "testdata/test.json"
+	assertFileNotEmpty(path, t)
+	defer restoreFile(path, getFileBytes(path))
+	todoObj := createTodoObj(path)
+	todoObj.Load()
+	if !(*todoObj.GetList())[0].DueAt.IsZero() {
+		t.Errorf(
+			"Expected item at index %d to have due at %v but got %v",
+			0,
+			(*todoObj.GetList())[0].DueAt,
+			(time.Time{}),
+		)
+	}
+	now := time.Now()
+	err := todoObj.AddDueAt(1, now, true)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if (*todoObj.GetList())[1].DueAt == now {
+		t.Errorf(
+			"Expected item at index %d to have due at %v but got %v",
+			1,
+			now,
+			(*todoObj.GetList())[1].DueAt,
+		)
+	}
+}
+
+// TestAddDueAtMany
+func TestAddDueAtMany(t *testing.T) {
+	path := "testdata/test.json"
+	assertFileNotEmpty(path, t)
+	defer restoreFile(path, getFileBytes(path))
+	todoObj := createTodoObj(path)
+	todoObj.Load()
+	if !(*todoObj.GetList())[0].DueAt.IsZero() {
+		t.Errorf(
+			"Expected item at index %d to have due at %v but got %v",
+			0,
+			(*todoObj.GetList())[0].DueAt,
+			(time.Time{}),
+		)
+	}
+	if !(*todoObj.GetList())[1].DueAt.IsZero() {
+		t.Errorf(
+			"Expected item at index %d to have due at %v but got %v",
+			1,
+			(*todoObj.GetList())[1].DueAt,
+			(time.Time{}),
+		)
+	}
+
+	now := time.Now()
+	err := todoObj.AddDueAtMany([]int32{1, 2}, now)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if (*todoObj.GetList())[0].DueAt != now {
+		t.Errorf(
+			"Expected item at index %d to have due at %v but got %v",
+			0,
+			now,
+			(*todoObj.GetList())[0].DueAt,
+		)
+	}
+	if (*todoObj.GetList())[1].DueAt != now {
+		t.Errorf(
+			"Expected item at index %d to have due at %v but got %v",
+			1,
+			now,
+			(*todoObj.GetList())[1].DueAt,
+		)
+	}
 }

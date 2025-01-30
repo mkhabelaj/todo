@@ -54,7 +54,10 @@ func (t *Todo) AddMany(infos []string) error {
 			return err
 		}
 	}
-	t.Save()
+
+	if err := t.Save(); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -247,7 +250,28 @@ func formatCompletionStatus(todo TodoItem) (string, string) {
 	return completed, completedAt
 }
 
-// get list
+// multiple dueAt functions
+
+func (t *Todo) AddDueAtMany(indexes []int32, dueAt time.Time) error {
+	indexes = sortAndRemoveDuplicates(indexes)
+	for _, index := range indexes {
+		t.AddDueAt(index, dueAt, false)
+	}
+	if err := t.Save(); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (t *Todo) AddDueAt(index int32, dueAt time.Time, save bool) error {
+	t.validateAndDecrementndex(&index)
+	(*t.list)[index].DueAt = dueAt
+	if err := t.Save(); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (t *Todo) GetList() *TodoList {
 	return t.list
 }
