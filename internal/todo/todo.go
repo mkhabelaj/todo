@@ -20,6 +20,8 @@ type TodoItem struct {
 	Completed   bool
 	CreateAt    time.Time
 	CompletedAT time.Time
+	DueAt       time.Time
+	Meta        map[string]string
 }
 
 type TodoList []TodoItem
@@ -38,7 +40,9 @@ func (t *Todo) Init() {
 func (t *Todo) Load() error {
 	items, err := t.Connecter.Read()
 	if err != nil {
-		return errors.New("Oops, something went wrong fetching your todo's from the source")
+		return errors.New(
+			"Oops, something went wrong fetching your todo's from the source" + err.Error(),
+		)
 	}
 	t.list = &items
 	return nil
@@ -50,12 +54,20 @@ func (t *Todo) AddMany(infos []string) error {
 			return err
 		}
 	}
+	t.Save()
 	return nil
 }
 
 func (t *Todo) Add(info string, save bool) error {
 	t.Init()
-	newTodo := TodoItem{info, false, time.Now(), time.Time{}}
+	newTodo := TodoItem{
+		Info:        info,
+		Completed:   false,
+		CreateAt:    time.Now(),
+		CompletedAT: time.Time{},
+		DueAt:       time.Time{},
+		Meta:        make(map[string]string),
+	}
 	*t.list = append(*t.list, newTodo)
 
 	if !save {
