@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -112,7 +111,7 @@ func (t *Todo) Delete(index int32, save bool) error {
 }
 
 func (t *Todo) DeleteMany(indexes []int32) error {
-	indexes = sortAndRemoveDuplicates(indexes)
+	indexes = util.SortAndRemoveDuplicates(indexes)
 	isFirst := true
 	for _, index := range indexes {
 		if isFirst {
@@ -134,7 +133,7 @@ func (t *Todo) DeleteMany(indexes []int32) error {
 }
 
 func (t *Todo) CompleteMany(indexes []int32) error {
-	indexes = sortAndRemoveDuplicates(indexes)
+	indexes = util.SortAndRemoveDuplicates(indexes)
 	for _, index := range indexes {
 		t.Complete(index, false)
 	}
@@ -271,7 +270,7 @@ func formatCompletionStatus(todo TodoItem) (string, string, string) {
 // multiple dueAt functions
 
 func (t *Todo) AddDueAtMany(indexes []int32, dueAt time.Time) error {
-	indexes = sortAndRemoveDuplicates(indexes)
+	indexes = util.SortAndRemoveDuplicates(indexes)
 	for _, index := range indexes {
 		t.AddDueAt(index, dueAt, false)
 	}
@@ -318,12 +317,4 @@ func (t *Todo) HasMeta(index int32, key string) bool {
 
 func (t *Todo) GetList() *TodoList {
 	return t.list
-}
-
-func sortAndRemoveDuplicates(ids []int32) []int32 {
-	ids = util.RemoveDuplicatesInt(ids)
-	sort.Slice(ids, func(i, j int) bool {
-		return ids[i] < ids[j]
-	})
-	return ids
 }

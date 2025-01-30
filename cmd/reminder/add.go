@@ -10,6 +10,7 @@ import (
 
 	"github.com/mkhabelaj/todo/internal/api/apple"
 	"github.com/mkhabelaj/todo/internal/connectors"
+	"github.com/mkhabelaj/todo/internal/util"
 )
 
 // addCmd represents the add command
@@ -34,9 +35,19 @@ to quickly create a Cobra application.`,
 			fmt.Println(err)
 		}
 
+		pipeList := *util.ReadStdin()
+		merge := append(args, pipeList...)
+
+		ids := make([]int32, len(merge))
+		ids, err = util.StrToint[int32](merge)
+		if err != nil {
+			fmt.Println("Invalid IDs, ensure they are numbers")
+			return
+		}
+
 		if appleB {
 			reminder := apple.Reminders{}
-			err = reminder.Add(TodoObj, 3, true)
+			err = reminder.AddMany(TodoObj, ids, true)
 			if err != nil {
 				fmt.Println(err)
 			}

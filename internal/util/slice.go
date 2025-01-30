@@ -1,6 +1,7 @@
 package util
 
 import (
+	"sort"
 	"strconv"
 )
 
@@ -29,4 +30,12 @@ func StrToint[U int | int8 | int16 | int32 | int64](slice []string) ([]U, error)
 		result[i] = n
 	}
 	return result, nil
+}
+
+func SortAndRemoveDuplicates(ids []int32) []int32 {
+	ids = RemoveDuplicatesInt(ids)
+	sort.Slice(ids, func(i, j int) bool {
+		return ids[i] < ids[j]
+	})
+	return ids
 }
