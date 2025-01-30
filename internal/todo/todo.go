@@ -7,6 +7,7 @@ import (
 	"os"
 	"sort"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/aquasecurity/table"
@@ -176,30 +177,41 @@ func (t *Todo) List() {
 	if len(list) == 0 {
 		log.Fatal("No todo's found")
 	}
+	// absentDueAt dueAtPadding
+	dueAtPadding := strings.Repeat(" ", 9)
+	completedAtPadding := strings.Repeat(" ", 9)
 	for i, todo := range list {
-		completed, completedAt := formatCompletionStatus(todo)
+		completed, completedAt, dueAt := formatCompletionStatus(todo)
+		if len(dueAt) == 1 {
+			dueAt = dueAtPadding + dueAt + dueAtPadding
+		}
+		if len(completedAt) == 1 {
+			completedAt = completedAtPadding + completedAt + completedAtPadding
+		}
 
 		if todo.Completed {
-			completed = "true"
+			completed = "true "
 
 			fmt.Printf(
-				"%v %v %v %v %v\n",
+				"%v %v %v %v %v %v\n",
 				i+1,
-				completed,
-				todo.Info,
-				completedAt,
-				todo.CreateAt.Format("2006-01-02 15:04:05"),
+				"Completed: "+completed,
+				"Completed At: "+completedAt,
+				"Due At: "+dueAt,
+				"Created At: "+todo.CreateAt.Format("2006-01-02 15:04:05"),
+				"Task: "+todo.Info,
 			)
 			continue
 		}
 		completed = "false"
 		fmt.Printf(
-			"%v %v %v %v %v\n",
+			"%v %v %v %v %v %v\n",
 			i+1,
-			completed,
-			todo.Info,
-			completedAt,
-			todo.CreateAt.Format("2006-01-02 15:04:05"),
+			"Completed: "+completed,
+			"Completed At: "+completedAt,
+			"Due At: "+dueAt,
+			"Created At: "+todo.CreateAt.Format("2006-01-02 15:04:05"),
+			"Task: "+todo.Info,
 		)
 	}
 }
@@ -212,11 +224,11 @@ func (t *Todo) Table() {
 	}
 
 	tabl := table.New(os.Stdout)
-	tabl.SetHeaders("ID", "Completed", "Todo", "Completed At", "Created At")
+	tabl.SetHeaders("ID", "Completed", "Todo", "Completed At", "Due At", "Created At")
 	tabl.SetRowLines(false)
 
 	for i, todo := range list {
-		completed, completedAt := formatCompletionStatus(todo)
+		completed, completedAt, dueAt := formatCompletionStatus(todo)
 
 		if todo.Completed {
 			completed = "✅"
@@ -224,6 +236,7 @@ func (t *Todo) Table() {
 				completed,
 				t.color(todo.Info, "green"),
 				t.color(completedAt, "green"),
+				t.color(dueAt, "green"),
 				t.color(todo.CreateAt.Format("2006-01-02 15:04:05"), "green"),
 			)
 			continue
@@ -234,20 +247,25 @@ func (t *Todo) Table() {
 			completed,
 			todo.Info,
 			completedAt,
+			dueAt,
 			todo.CreateAt.Format("2006-01-02 15:04:05"),
 		)
 	}
 	tabl.Render()
 }
 
-func formatCompletionStatus(todo TodoItem) (string, string) {
+func formatCompletionStatus(todo TodoItem) (string, string, string) {
 	completed := "-"
 	completedAt := "-"
+	dueAt := "-"
 
+	if !todo.DueAt.IsZero() {
+		dueAt = todo.DueAt.Format("2006-01-02 15:04:05")
+	}
 	if !todo.CompletedAT.IsZero() {
 		completedAt = todo.CompletedAT.Format("2006-01-02 15:04:05")
 	}
-	return completed, completedAt
+	return completed, completedAt, dueAt
 }
 
 // multiple dueAt functions
