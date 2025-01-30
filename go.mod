@@ -22,3 +22,7 @@ require (
 )
 
 replace github.com/mkhabelaj/todo/internal/util => ../todo/internal/util
+
+replace github.com/mkhabelaj/todo/internal/api => ../todo/internal/api
+
+replace github.com/mkhabelaj/todo/internal/api/apple => ../todo/internal/api/apple

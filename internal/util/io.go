@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"log"
 	"os"
+	"os/exec"
 )
 
 func ReadStdin() *[]string {
@@ -20,4 +21,18 @@ func ReadStdin() *[]string {
 		}
 	}
 	return &list
+}
+
+// TODO: ensure this can be run on any OS
+func IsAppleComputer() bool {
+	cmd := exec.Command("uname", "-a")
+	out, err := cmd.Output()
+	if err != nil {
+		return false
+	}
+
+	if string(out) == "Darwin" {
+		return true
+	}
+	return false
 }
