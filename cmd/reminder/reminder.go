@@ -1,6 +1,3 @@
-/*
-Copyright © 2025 NAME HERE <EMAIL ADDRESS>
-*/
 package reminder
 
 import (
@@ -10,28 +7,14 @@ import (
 // reminderCmd represents the reminder command
 var ReminderCmd = &cobra.Command{
 	Use:   "reminder",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Short: "Share local tasks with Apple Reminders and more",
+	Long: `The 'reminder' command integrates local apps with external platforms, starting with Apple Reminders. 
+Use subcommands for specific tasks. Future updates will support more platforms. Use 'help' for details.
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	// Run: func(cmd *cobra.Command, args []string) {
-	// 	fmt.Println("reminder called")
-	// },
+Example usage:
+  todo reminder add --apple 1 2 3 // add reminders for tasks 1, 2, and 3 to Apple Reminders
+`,
 }
 
 func init() {
-	// rootCmd.AddCommand(reminderCmd)
-	//
-	// // Here you will define your flags and configuration settings.
-	//
-	// // Cobra supports Persistent Flags which will work for this command
-	// // and all subcommands, e.g.:
-	// // reminderCmd.PersistentFlags().String("foo", "", "A help for foo")
-	//
-	// // Cobra supports local flags which will only run when this command
-	// // is called directly, e.g.:
-	// // reminderCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

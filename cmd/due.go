@@ -1,6 +1,3 @@
-/*
-Copyright © 2025 NAME HERE <EMAIL ADDRESS>
-*/
 package cmd
 
 import (
@@ -16,13 +13,12 @@ import (
 // dueCmd represents the due command
 var dueCmd = &cobra.Command{
 	Use:   "due",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Short: "Set a due date for tasks",
+	Long: `Set a due date for tasks using the specified date and time format.
+For example:
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+todo due 1 2 3 --datetime "2025-12-31 23:59",
+echo "1\n2\n3" | todo due --datetime "2025-12-31 23:59"`,
 	Run: func(cmd *cobra.Command, args []string) {
 		datetime, err := cmd.Flags().GetString("datetime")
 		if err != nil {

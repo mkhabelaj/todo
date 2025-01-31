@@ -1,6 +1,3 @@
-/*
-Copyright © 2025 NAME HERE <EMAIL ADDRESS>
-*/
 package reminder
 
 import (
@@ -13,16 +10,22 @@ import (
 	"github.com/mkhabelaj/todo/internal/util"
 )
 
-// addCmd represents the add command
 var addCmd = &cobra.Command{
 	Use:   "add",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Short: "Add a new reminder",
+	Long: `Add a new reminder from your list to a supported app. You can specify multiple IDs
+to add multiple reminders at once. Use the --apple or -a flag to add
+reminders specifically to the Apple Reminders app.
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+The workflow is to have Tasks in your todo list, then this command will convert them to Reminders
+on the supported app. If the task has a due date, it will be added to the Reminders app as well.
+
+Example usage:
+  todo reminder add 1 2 3 --apple
+  echo "1\n2\n3" | todo reminder add --apple
+
+`,
+
 	Run: func(cmd *cobra.Command, args []string) {
 		appleB, err := cmd.Flags().GetBool("apple")
 		if err != nil {
