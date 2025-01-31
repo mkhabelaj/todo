@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os/exec"
+	"strconv"
 	"strings"
 	"sync"
 
@@ -16,18 +17,27 @@ const (
 )
 
 type Reminders struct {
-	mu sync.Mutex
+	mu   sync.Mutex
+	errs []error
+}
+
+func (t *Reminders) ClearErrors() {
+	t.errs = []error{}
 }
 
 func (t *Reminders) Add(todo todo.Todo, id int, save bool) error {
 	if err := isApple(); err != nil {
+		t.errs = append(t.errs, err)
 		return err
 	}
 	t.mu.Lock()
 	task := todo.GetTask(int32(id))
 
 	if todo.HasMeta(int32(id), ID) {
-		return errors.New("Reminder already exists")
+		err := errors.New("Reminder already exists for ID: " + strconv.Itoa(int(id)))
+		t.errs = append(t.errs, err)
+		t.mu.Unlock()
+		return err
 	}
 	t.mu.Unlock()
 
@@ -50,11 +60,13 @@ func (t *Reminders) Add(todo todo.Todo, id int, save bool) error {
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
+		t.errs = append(t.errs, err)
 		return fmt.Errorf("error running osascript: %s\n%s", err, string(output))
 	}
 
 	result, err := getIdFromOutputBytes(output)
 	if err != nil {
+		t.errs = append(t.errs, err)
 		return err
 	}
 	t.mu.Lock()
@@ -68,6 +80,9 @@ func (t *Reminders) AddMany(todo todo.Todo, ids []int32, save bool) error {
 	if err := isApple(); err != nil {
 		return err
 	}
+
+	t.ClearErrors()
+
 	ids = util.SortAndRemoveDuplicates(ids)
 
 	var wg sync.WaitGroup
@@ -81,8 +96,21 @@ func (t *Reminders) AddMany(todo todo.Todo, ids []int32, save bool) error {
 
 	wg.Wait()
 	err := todo.Save()
+
+	var errs []string
+
 	if err != nil {
-		return err
+		errs = append(errs, err.Error())
+	}
+
+	if t.errs != nil || err != nil {
+		var errs []string
+
+		for _, err := range t.errs {
+			errs = append(errs, err.Error())
+		}
+
+		return errors.New(strings.Join(errs, "\n"))
 	}
 
 	return nil
